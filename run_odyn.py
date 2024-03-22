@@ -1,5 +1,5 @@
 """
-Use TIAToolbox Multi-Task Segmentor to gt nuclear/layer segmentations with HoVer-Net+.
+Run the complete ODYN pipeline for OED diagnosis and prognosis.
 
 Usage:
   run_odyn.py [options] [--help] [<args>...]

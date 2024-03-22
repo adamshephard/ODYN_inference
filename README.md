@@ -16,7 +16,7 @@ Note, we recommend running inference of the ODYN model on the GPU. Nuclear insta
 
 ## Set Up Environment
 
-We use Python 3.10 with the [tiatoolbox](https://github.com/TissueImageAnalytics/tiatoolbox) package installed. By default this uses PyTorch 2.2.
+We use Python 3.11 with the [tiatoolbox](https://github.com/TissueImageAnalytics/tiatoolbox) package installed. By default this uses PyTorch 2.2.
 
 ```
 conda create -n odyn python=3.11 cudatoolkit=11.8
@@ -34,6 +34,7 @@ pip install ml-collections
 Below are the main directories in the repository: 
 
 - `dataloader/`: the data loader and augmentation pipeline
+- `doc/`: image files used for rendering the README
 - `utils/`: scripts for metric, patch generation
 - `models/`: model definition
 
@@ -48,7 +49,6 @@ Below are the main executable scripts in the repository:
 - `heatmap_generation.py`: script to generate heatmaps (needs tidying up)
 
 
-
 ## Inference
 
 ### Data Format
@@ -57,7 +57,9 @@ Input: <br />
 
 ### Model Weights
 
-The MLP model weights obtained from training on the Sheffield OED dataset: [OED MLP checkpoint](). If the model/checkpoint is used, please ensure to cite the corresponding paper.
+The Transformer model weights (for dyplasia segmentation) obtained from training on the Sheffield OED dataset: [OED Transformer checkpoint](https://drive.google.com/file/d/1EF3ItKmYhtdOy5aV9CJZ0a-g03LDaVy4/view?usp=sharing). 
+The MLP model weights obtained from training on each fold of the Sheffield OED dataset: [OED MLP checkpoint](). 
+If any of the models/checkpoints are used, please ensure to cite the corresponding paper.
 
 ### Usage
 
@@ -125,10 +127,14 @@ Usage: <br />
   python heatmap_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --hovernetplus_dir="/path/to/hovernetplus/output/" --checkpoint_path="/path/to/checkpoint/" --output_dir="/path/to/heatmap/output/dir/"
 ```
 
-# License
+## Interactive Demo
 
 TO DO
 
-# Cite this repository
+## License
+
+TO DO
+
+## Cite this repository
 
 TO DO
