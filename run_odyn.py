@@ -7,15 +7,17 @@ Usage:
   run_odyn.py (-h | --help)
   
 Options:
-  -h --help                   Show this string.
-  --version                   Show version.
+  -h --help                       Show this string.
+  --version                       Show version.
 
-  --input_dir=<string>        Path to input directory containing slides or images.
-  --output_dir=<string>       Path to output directory to save results.
-  --mode=<string>             Tile-level or WSI-level mode. [default: wsi]
-  --nr_loader_workers=<n>     Number of workers during data loading. [default: 10]
-  --nr_post_proc_workers=<n>  Number of workers during post-processing. [default: 10]
-  --batch_size=<n>            Batch size for deep learning models. [default: 8]
+  --input_dir=<string>            Path to input directory containing slides or images.
+  --output_dir=<string>           Path to output directory to save results.
+  --transformer_weights=<string>  Path to transformer weights.
+  --hovernetplus_weights=<string> Path to HoverNet+ weights.
+  --mode=<string>                 Tile-level or WSI-level mode. [default: wsi]
+  --nr_loader_workers=<n>         Number of workers during data loading. [default: 10]
+  --nr_post_proc_workers=<n>      Number of workers during post-processing. [default: 10]
+  --batch_size=<n>                Batch size for deep learning models. [default: 8]
 
 Use `run_odyn.py --help` to show their options and usage
 """
@@ -65,9 +67,19 @@ if __name__ == '__main__':
             raise ValueError("Mode must be tile or wsi")
     else:
         mode = "wsi" # or tile
-
+        
+    if args['--transformer_weights']:
+        transformer_weights = args['--transformer_weights']
+    else:
+        transformer_weights = "/data/ANTICIPATE/outcome_prediction/ODYN_inference/weights/transunet_external.tar"
+        
+    if args['--hovernetplus_weights']:
+        hovernetplus_weights = args['--hovernetplus_weights']
+    else:
+        hovernetplus_weights = "/data/ANTICIPATE/outcome_prediction/ODYN_inference/weights/hovernetplus.tar"        
+        
+        
     ### 1. Segment Dysplasia ###
-    transformer_weights = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/models/TransUNet_model_best.pth"
     dysp_colour_dict = {
         "nolabel": [0, [0  ,   0,   0]],
         "dysplasia": [1, [255,   0,   0]],
@@ -76,7 +88,7 @@ if __name__ == '__main__':
     segment_dysplasia(
         input_wsi_dir=input_wsi_dir,
         output_dir=os.path.join(output_dir, "dysplasia"),
-        transformer_weights=transformer_weights,
+        model_weights=transformer_weights,
         colour_dict=dysp_colour_dict,
         mode=mode,
         nr_loader_workers=int(args['--nr_loader_workers']),
@@ -96,6 +108,7 @@ if __name__ == '__main__':
     segment_epithelium(
         input_wsi_dir=input_wsi_dir,
         output_dir=os.path.join(output_dir, "hovernetplus"),
+        model_weights=hovernetplus_weights,
         colour_dict=epith_colour_dict,
         mode=mode,
         nr_loader_workers=int(args['--nr_loader_workers']),

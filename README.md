@@ -82,10 +82,11 @@ Output: <br />
 
 ### Model Weights
 
-The Transformer model weights (for dyplasia segmentation) obtained from training on the Sheffield OED dataset: [OED Transformer checkpoint](https://drive.google.com/file/d/1EF3ItKmYhtdOy5aV9CJZ0a-g03LDaVy4/view?usp=sharing). 
-The HoVer-Net+ model weights (for epithelium segmentation) obtained from training on the Sheffield OED dataset: [OED HoVer-Net+ checkpoint](https://drive.google.com/file/d/1D2OQhHv-5e9ncRfjv2QM8HE7PAWoS79h/view?usp=sharing). Note, these weights are updated compared to TIAToolbox's and are those obtained in this [paper](https://arxiv.org/abs/2307.03757).
-The MLP model weights obtained from training on each fold of the Sheffield OED dataset: [OED MLP checkpoint](). 
-If any of the models or checkpoints are used, please ensure to cite the corresponding paper.
+We use the following weights in this work. If any of the models or checkpoints are used, please ensure to cite the corresponding paper.
+
+- The Transformer model weights (for dyplasia segmentation) obtained from training on the Sheffield OED dataset: [OED Transformer checkpoint](https://drive.google.com/file/d/1EF3ItKmYhtdOy5aV9CJZ0a-g03LDaVy4/view?usp=sharing). 
+- The HoVer-Net+ model weights (for epithelium segmentation) obtained from training on the Sheffield OED dataset: [OED HoVer-Net+ checkpoint](https://drive.google.com/file/d/1D2OQhHv-5e9ncRfjv2QM8HE7PAWoS79h/view?usp=sharing). Note, these weights are updated compared to TIAToolbox's and are those obtained in this [paper](https://arxiv.org/abs/2307.03757).
+- The MLP model weights obtained from training on each fold of the Sheffield OED dataset: [OED MLP checkpoints](). 
 
 ### Usage
 
@@ -95,7 +96,7 @@ A user can run the ODYN pipeline on all their slides using the below command. Th
 
 Usage: <br />
 ```
-  python run_odyn.py --input_dir="/path/to/input/slides/or/images/dir/" --output_dir="/path/to/output/dir/"
+  python run_odyn.py --input_dir="/path/to/input/slides/or/images/dir/" --output_dir="/path/to/output/dir/" --transformer_weights="/path/to/hovernetplus/checkpoint/" --hovernetplus_weights="/path/to/hovernetplus/checkpoint/" --mlp_weights="/path/to/mlp/checkpoint/" 
 ```
 
 Alternatively, to have more control, a user can run each of the stages used by the ODYN model at a time. These are shown below.
@@ -141,7 +142,7 @@ The final stage is to infer using the MLP on the tiles (and their features) gene
 
 Usage: <br />
 ```
-  python oed_prognosis.py --input_data_file="/path/to/input/data/file/" --input_ftrs_dir="/path/to/input/tile/ftrs/" --model_checkpoint="/path/to/model/checkpoint/" --output_dir="/path/to/output/dir/"
+  python oed_prognosis.py --input_data_file="/path/to/input/data/file/" --input_ftrs_dir="/path/to/input/tile/ftrs/" --model_checkpoint="/path/to/mlp/checkpoint/" --output_dir="/path/to/output/dir/"
 ```
 
 #### ODYN Heatmaps
@@ -150,7 +151,7 @@ We can also generate heatmaps for these images. Change the `stride` within the f
     
 Usage: <br />
 ```
-  python heatmap_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --hovernetplus_dir="/path/to/hovernetplus/output/" --checkpoint_path="/path/to/checkpoint/" --output_dir="/path/to/heatmap/output/dir/"
+  python heatmap_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --hovernetplus_dir="/path/to/hovernetplus/output/" --checkpoint_path="/path/to/mlp/checkpoint/" --output_dir="/path/to/heatmap/output/dir/"
 ```
 
 ## Interactive Demo

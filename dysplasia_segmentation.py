@@ -83,7 +83,7 @@ def process_segmentation(seg_path: str, out_path: str, colour_dict: dict, mode: 
 def segment_dysplasia(
     input_wsi_dir: str,
     output_dir: str,
-    transformer_weights: str,
+    model_weights: str,
     colour_dict: dict,
     mode: str | str = "wsi",
     nr_loader_workers: int = 10,
@@ -106,7 +106,7 @@ def segment_dysplasia(
     transformer = TransUNet(
         encoder="R50-ViT-B_16",
         num_types=2,
-        weights=transformer_weights,
+        weights=model_weights,
         )
 
     segmentor = SemanticSegmentor(
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     segment_dysplasia(
         input_wsi_dir=input_wsi_dir,
         output_dir=output_dir,
-        transformer_weights=checkpoint_path,
+        model_weights=checkpoint_path,
         colour_dict=colour_dict,
         mode=mode,
         nr_loader_workers=int(args['--nr_loader_workers']),
