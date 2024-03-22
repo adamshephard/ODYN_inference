@@ -125,10 +125,10 @@ Usage: <br />
   python heatmap_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --hovernetplus_dir="/path/to/hovernetplus/output/" --checkpoint_path="/path/to/checkpoint/" --output_dir="/path/to/heatmap/output/dir/"
 ```
 
-### License
+# License
 
 TO DO
 
-### Cite this repository
+# Cite this repository
 
 TO DO
