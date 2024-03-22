@@ -1,0 +1,5 @@
+# Folders
+weights/
+
+# Weights
+*.tar
