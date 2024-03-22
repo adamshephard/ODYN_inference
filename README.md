@@ -14,6 +14,18 @@ Following this, for OED slides, we generate patch-level morphological and spatia
 
 Note, we recommend running inference of the ODYN model on the GPU. Nuclear instance segmentation, in particular, will be very slow when run on CPU. 
 
+## TO DO
+- [ ] Add post processing to epithelium segmentation with HoVer-Net+
+- [ ] OED diagnosis script
+- [ ] Feature generation script
+- [ ] OED prognosis script
+- [ ] Run ODYN script and tidy output of odyn score/diagnosis
+- [ ] Add interactive demo
+- [ ] Upload CV model weights
+- [ ] License information
+- [ ] Add pre print and citation information
+- [ ] Make repo public
+
 ## Set Up Environment
 
 We use Python 3.11 with the [tiatoolbox](https://github.com/TissueImageAnalytics/tiatoolbox) package installed. By default this uses PyTorch 2.2.

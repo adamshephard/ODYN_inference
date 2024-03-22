@@ -2,9 +2,9 @@
 Generate morphological/spatial features for MLP (based on HoVer-Net+ output) for OMTscoring.
 
 Usage:
-  create_features.py [options] [--help] [<args>...]
-  create_features.py --version
-  create_features.py (-h | --help)
+  feature_generation.py [options] [--help] [<args>...]
+  feature_generation.py --version
+  feature_generation.py (-h | --help)
   
 Options:
   -h --help                   Show this string.
@@ -14,7 +14,7 @@ Options:
   --hovernetplus_dir=<string> Path to HoVer-Net+ output directory.
   --output_dir=<string>       Path to output directory to save features.
 
-Use `create_features.py --help` to show their options and usage
+Use `feature_generation.py --help` to show their options and usage
 """
 
 from docopt import docopt

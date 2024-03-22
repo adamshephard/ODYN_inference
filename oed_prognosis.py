@@ -2,9 +2,9 @@
 Inference script for OMTscoring.
 
 Usage:
-  run_omt_scoring.py [options] [--help] [<args>...]
-  run_omt_scoring.py --version
-  run_omt_scoring.py (-h | --help)
+  oed_prognosis.py [options] [--help] [<args>...]
+  oed_prognosis.py --version
+  oed_prognosis.py (-h | --help)
   
 Options:
   -h --help                   Show this string.
@@ -15,7 +15,7 @@ Options:
   --output_dir=<string>       Path to output directory to save results.
   --model_checkpoint=<string> Path to model checkpoint.
 
-Use `run_omt_scoring.py --help` to show their options and usage
+Use `oed_prognosis.py --help` to show their options and usage
 """
 
 

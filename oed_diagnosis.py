@@ -1,10 +1,10 @@
 """
-Use TIAToolbox Multi-Task Segmentor to get nuclear/epithelial layer segmentations with HoVer-Net+.
+Use generated masks to classify an oral tissue slide as OED or normal.
 
 Usage:
-  run_segmentation.py [options] [--help] [<args>...]
-  run_segmentation.py --version
-  run_segmentation.py (-h | --help)
+  oed_diagnosis.py [options] [--help] [<args>...]
+  oed_diagnosis.py --version
+  oed_diagnosis.py (-h | --help)
   
 Options:
   -h --help                   Show this string.
@@ -17,7 +17,7 @@ Options:
   --nr_post_proc_workers=<n>  Number of workers during post-processing. [default: 10]
   --batch_size=<n>            Batch size. [default: 8]
 
-Use `run_segmentation.py --help` to show their options and usage
+Use `oed_diagnosis.py --help` to show their options and usage
 """
 
 from docopt import docopt
@@ -87,11 +87,21 @@ if __name__ == '__main__':
         print(__doc__)
         exit()
 
-    if args['--input_dir']:
-        input_wsi_dir = args['--input_dir']
+    if args['--input_wsi_dir']:
+        input_wsi_dir = args['--input_wsi_dir']
     else:      
         input_wsi_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/wsis/"
-    
+
+    if args['--input_dysplasia_dir']:
+        input_dysp_dir = args['--input_dysplasia_dir']
+    else:      
+        input_dysp_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/output3/dysplasia/"
+        
+    if args['--input_epith_dir']:
+        input_dysp_dir = args['--input_epith_dir']
+    else:      
+        input_dysp_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/output3/epith/"
+            
     if args['--output_dir']:
         output_dir = args['--output_dir']
     else:
@@ -104,8 +114,9 @@ if __name__ == '__main__':
     else:
         mode = "wsi" # or tile
 
+    threshold = 0.055022543958983 # dysplasia ratio threshold for determing OED vs normal
 
-    colour_dict = {
+    epith_colour_dict = {
         "nolabel": [0, [0  ,   0,   0]],
         "other": [1, [255, 165,   0]],
         "basal": [2, [255, 0,   0]],
@@ -113,7 +124,12 @@ if __name__ == '__main__':
         "keratin": [4, [0,   0,   255]],
     }
     
-    segment_epithelium(
+    dysp_colour_dict = {
+        "nolabel": [0, [0  ,   0,   0]],
+        "dysplasia": [1, [255, 0,   0]]
+    }
+    
+    generate_ratio(
         input_wsi_dir=input_wsi_dir,
         output_dir=output_dir,
         colour_dict=colour_dict,
