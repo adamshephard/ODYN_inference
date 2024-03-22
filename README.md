@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="doc/odyn.png">
+  <img src="doc/odyn.png" width='25'>
 </p>
 
 # ODYN: Oral DYsplasia Network Inference
