@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="doc/odyn.png">
+</p>
+
 # ODYN: Oral DYsplasia Network Inference
 
 This repository provides the ODYN inference code for the models used within the paper [Development and Validation of an Artificial Intelligence-based Pipeline for the Prediction of Malignant Transformation in Oral Epithelial Dysplasia: A Retrospective Multi-Centric Study](). <br />
@@ -70,7 +74,7 @@ Alternatively, to have more control, a user can run each of the stages used by t
 
 #### Dysplasia Segmentation with Transformer
 
-The first stage is to run the Transformer-based model on the WSIs to generate dysplasia segmentations. This is relatvieyl fast and is run at 1.0mpp.
+The first stage is to run the Transformer-based model on the WSIs to generate dysplasia segmentations. This is relatively fast and is run at 1.0mpp.
 
 Usage: <br />
 ```
@@ -100,7 +104,7 @@ The fourth stage is to tesselate the image into smaller patches and generate cor
 
 Usage: <br />
 ```
-  python create_features.py --input_dir="/path/to/input/slides/or/images/dir/" --epithelium_dir="/path/to/hovernetplus/output/" --output_dir="/path/to/output/feature/dir/"
+  python feature_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --epithelium_dir="/path/to/hovernetplus/output/" --output_dir="/path/to/output/feature/dir/"
 ```
 
 #### OED Prognosis wit ODYN, i.e. the ODYN-score
@@ -121,3 +125,10 @@ Usage: <br />
   python heatmap_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --hovernetplus_dir="/path/to/hovernetplus/output/" --checkpoint_path="/path/to/checkpoint/" --output_dir="/path/to/heatmap/output/dir/"
 ```
 
+### License
+
+TO DO
+
+### Cite this repository
+
+TO DO
