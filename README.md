@@ -83,6 +83,7 @@ Output: <br />
 ### Model Weights
 
 The Transformer model weights (for dyplasia segmentation) obtained from training on the Sheffield OED dataset: [OED Transformer checkpoint](https://drive.google.com/file/d/1EF3ItKmYhtdOy5aV9CJZ0a-g03LDaVy4/view?usp=sharing). 
+The HoVer-Net+ model weights (for epithelium segmentation) obtained from training on the Sheffield OED dataset: [OED HoVer-Net+ checkpoint](https://drive.google.com/file/d/1D2OQhHv-5e9ncRfjv2QM8HE7PAWoS79h/view?usp=sharing). Note, these weights are updated compared to TIAToolbox's and are those obtained in this [paper](https://arxiv.org/abs/2307.03757).
 The MLP model weights obtained from training on each fold of the Sheffield OED dataset: [OED MLP checkpoint](). 
 If any of the models or checkpoints are used, please ensure to cite the corresponding paper.
 
@@ -101,7 +102,7 @@ Alternatively, to have more control, a user can run each of the stages used by t
 
 #### Dysplasia Segmentation with Transformer
 
-The first stage is to run the Transformer-based model on the WSIs to generate dysplasia segmentations. This is relatively fast and is run at 1.0mpp. Note the `model_checkpoint` is the path to the Transformer segmentation weights available to download from above.
+The first stage is to run the Transformer-based model on the WSIs to generate dysplasia segmentations. This is relatively fast and is run at 1.0mpp. Note, the `model_checkpoint` is the path to the Transformer segmentation weights available to download from above.
 
 Usage: <br />
 ```
@@ -109,11 +110,11 @@ Usage: <br />
 ```
 #### Epithelium Segmentation with HoVer-Net+
 
-The second stage is to run HoVer-Net+ on the WSIs to generate epithelial and nuclei segmentations. This can be quite slow as run at 0.5mpp.
+The second stage is to run HoVer-Net+ on the WSIs to generate epithelial and nuclei segmentations. This can be quite slow as run at 0.5mpp. Note, the `model_checkpoint` is the path to the HoVer-Net+ segmentation weights available to download from above. However, if none are provided then the default version of HoVer-Net+ used with TIAToolbox, will be used.
 
 Usage: <br />
 ```
-  python epithelium_segmentation.py --input_dir="/path/to/input/slides/or/images/dir/" --output_dir="/path/to/epithelium/output/dir/"
+  python epithelium_segmentation.py --input_dir="/path/to/input/slides/or/images/dir/" --output_dir="/path/to/epithelium/output/dir/" --model_checkpoint="/path/to/hovernetplus/checkpoint/"
 ```
 
 #### OED Diagnosis with ODYN

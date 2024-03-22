@@ -13,6 +13,7 @@ Options:
   --input_dir=<string>        Path to input directory containing slides or images.
   --output_dir=<string>       Path to output directory to save results.
   --mode=<string>             Tile-level or WSI-level mode. [default: wsi]
+  --model_checkpoint=<string> Path to model weights.
   --nr_loader_workers=<n>     Number of workers during data loading. [default: 10]
   --nr_post_proc_workers=<n>  Number of workers during post-processing. [default: 10]
   --batch_size=<n>            Batch size. [default: 8]
@@ -25,13 +26,17 @@ import os
 import glob
 import shutil
 
+import torch
 import numpy as np
 from scipy import ndimage
 import cv2
 from skimage import morphology
 
 from tiatoolbox.models.engine.multi_task_segmentor import MultiTaskSegmentor
+from tiatoolbox.models.architecture.hovernetplus import HoVerNetPlus
 from tiatoolbox.utils.misc import imwrite
+
+from models.net_utils import convert_pytorch_checkpoint
 
 # proc functions
 def smooth_ep_ker_boundary(
@@ -131,6 +136,7 @@ def process_segmentation(seg_path: str, out_path: str, colour_dict: dict, mode: 
 def segment_epithelium(
     input_wsi_dir: str,
     output_dir: str,
+    model_weights: str | str = None,
     colour_dict: dict = None,
     mode: str = "wsi",
     nr_loader_workers: int | int = 10,
@@ -147,6 +153,20 @@ def segment_epithelium(
         batch_size=batch_size,
         auto_generate_mask=False,
     )
+    
+    if model_weights is not None: # Then use new weights
+        pretrained_weights = torch.load(model_weights, map_location=torch.device("cuda"))
+        state_dict = pretrained_weights['desc']
+        state_dict = convert_pytorch_checkpoint(state_dict)
+        # Iterate through the keys of the dictionary
+        for key in list(state_dict.keys()):
+            # Check if ".tp." is in the key
+            if ".tp2." in key:
+                # Replace ".tp." with ".tp2."
+                new_key = key.replace(".tp2.", ".tp.")
+                # Update the dictionary with the new key and the corresponding value
+                state_dict[new_key] = state_dict.pop(key)
+        multi_segmentor.model.load_state_dict(state_dict, strict=True)
 
     # WSI prediction
     wsi_output = multi_segmentor.predict(
@@ -199,7 +219,7 @@ if __name__ == '__main__':
     if args['--output_dir']:
         output_dir = args['--output_dir']
     else:
-        output_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/output3/"
+        output_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/output4/"
     
     if args['--mode']:
         mode = args['--mode']
@@ -207,7 +227,12 @@ if __name__ == '__main__':
             raise ValueError("Mode must be tile or wsi")
     else:
         mode = "wsi" # or tile
-
+        
+    if args['--model_checkpoint']:
+        checkpoint_path = args['--model_checkpoint']
+    else:
+        checkpoint_path = "/data/ANTICIPATE/outcome_prediction/ODYN_inference/weights/hovernetplus.tar"
+        
 
     epith_colour_dict = {
         "nolabel": [0, [0  ,   0,   0]],
@@ -220,9 +245,10 @@ if __name__ == '__main__':
     segment_epithelium(
         input_wsi_dir=input_wsi_dir,
         output_dir=output_dir,
+        model_weights=checkpoint_path,
         colour_dict=epith_colour_dict,
         mode=mode,
         nr_loader_workers=int(args['--nr_loader_workers']),
         nr_post_proc_workers=int(args['--nr_post_proc_workers']),
-        batch_size=int(args['--batch_size']),
+        batch_size=16,#int(args['--batch_size']),
         )
