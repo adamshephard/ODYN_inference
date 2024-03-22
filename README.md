@@ -20,7 +20,9 @@ Note, we recommend running inference of the ODYN model on the GPU. Nuclear insta
 - [ ] Feature generation script
 - [ ] OED prognosis script
 - [ ] Run ODYN script and tidy output of odyn score/diagnosis
+- [ ] Heatmap script
 - [ ] Add interactive demo
+- [ ] Add new HoVer-Net+ weights
 - [ ] Upload CV model weights
 - [ ] License information
 - [ ] Add pre print and citation information
@@ -141,7 +143,13 @@ Usage: <br />
 
 ## Interactive Demo
 
-TO DO
+TO DO! Add nuclei (as DBs) and heatmaps, and more slides.
+
+We have made an interactive demo to help visualise the output of our model. Note, this is not optimised for mobile phones and tablets. The demo was built using the TIAToolbox [tile server](https://tia-toolbox.readthedocs.io/en/latest/_autosummary/tiatoolbox.visualization.tileserver.TileServer.html).
+
+Check out the demo [here](https://tiademos.dcs.warwick.ac.uk/bokeh_app?demo=odyn). 
+
+In the demo, we provide multiple examples of WSI-level results.
 
 ## License
 

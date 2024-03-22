@@ -24,45 +24,102 @@ from docopt import docopt
 import os
 import glob
 import shutil
+
+import numpy as np
+from scipy import ndimage
+import cv2
+from skimage import morphology
+
 from tiatoolbox.models.engine.multi_task_segmentor import MultiTaskSegmentor
+from tiatoolbox.utils.misc import imwrite
 
 # proc functions
-# proc functions
-def wsi_post_proc(wsi_seg: np.ndarray, fx: int=1) -> np.ndarray:
+def smooth_ep_ker_boundary(
+    layer_map: np.ndarray,
+    mpp: float,
+    ) -> np.ndarray:
     """
-    Post processing for WSI-level segmentations.
+    Smooth epithelial/keratin boundary.
     """
-    wsi_seg = wsi_seg[..., 1]
-    wsi_seg = np.where(wsi_seg >= 0.5,1,0)
+    fx = (2 / 2) * mpp
+    kernel_size = int(5*fx)
 
-    wsi_seg = np.around(wsi_seg).astype("uint8")  # ensure all numbers are integers
-    min_size = int(10000 * fx * fx)
-    min_hole = int(15000 * fx * fx)
-    kernel_size = int(11*fx)
     if kernel_size % 2 == 0:
         kernel_size += 1
-    ep_close = cv2.morphologyEx(
-        wsi_seg, cv2.MORPH_CLOSE, np.ones((kernel_size, kernel_size))
-    ).astype("uint8")
-    ep_open = cv2.morphologyEx(
-        ep_close, cv2.MORPH_OPEN, np.ones((kernel_size, kernel_size))
-    ).astype(bool)
-    ep_open2 = morphology.remove_small_objects(
-        ep_open.astype('bool'), min_size=min_size
-    ).astype("uint8")
-    ep_open3 = morphology.remove_small_holes(
-        ep_open2.astype('bool'), min_hole).astype('uint8')
-    return ep_open3
+    
+    min_size = int(1000/(fx*fx))
+    basal_map = (layer_map == 2).astype('uint8')
+    tissue_map = (layer_map == 1).astype('uint8')
+    epith_map = layer_map > 2
+    epith_map_binary = epith_map.astype('uint8')
+    epith_map = epith_map_binary*layer_map
+    epith_lyrs = np.unique(epith_map)[1:]  # exclude background
+    layer_map = tissue_map
+    epith_new = epith_map_binary.astype('uint8')*3
+    layer_map = epith_new.copy()
+    layer_map[tissue_map == 1] = 1
+    
+    for lyr in [4, 3]:
+        if lyr in epith_lyrs:
+            epith_lyr = epith_map == lyr #np.where(epith_map, lyr, 0).astype('uint8')
+            epith_lyr = epith_lyr.astype('uint8')
+            epith_lyr = cv2.morphologyEx(
+                epith_lyr, cv2.MORPH_CLOSE, np.ones((kernel_size, kernel_size))
+            )
+            epith_lyr = cv2.morphologyEx(
+                epith_lyr, cv2.MORPH_OPEN, np.ones((kernel_size, kernel_size))
+            )
+            epith_lyr = morphology.remove_small_objects(epith_lyr, min_size)
+            epith_lyr = morphology.remove_small_holes(epith_lyr, min_size)
+            layer_map[epith_lyr == 1] = lyr
+
+    layer_map[basal_map == 1] = 2
+    
+    return layer_map
+
+
+def remove_spurious_epith(
+    layer_map: np.ndarray,
+    ) -> np.ndarray:
+    """
+    Remove spurious epithelium. Replace with remove_small_objects....
+    """
+    epith_map = layer_map > 1
+    epith_map_binary = epith_map.astype('uint8')
+    epith_map = epith_map_binary*layer_map
+    epith_map_labelled = ndimage.label(epith_map_binary)[0]
+    epith_id_list = np.unique(epith_map_labelled)[1:]  # exclude background
+    
+    if len(epith_id_list) >= 1:
+        for e in epith_id_list:
+            epith = epith_map_labelled == e
+            epith_binary = epith.astype('int')
+            epith = epith_binary*epith_map
+            vals, counts = np.unique(epith, return_counts=True)
+            vals = vals[1:]
+            counts = counts[1:]
+            if len(vals) > 1:
+                counts_f = []
+                vals_f = []
+                max_c = np.max(counts)
+                for idx, c in enumerate(counts):
+                    if c > max_c//10:
+                        counts_f.append(c)
+                        vals_f.append(vals[idx])
+                if len(vals_f) == 1:
+                    layer_map[epith_binary==1] = 1
+            else:
+                layer_map[epith_binary==1] = 1
+        
+    return layer_map
 
 def process_segmentation(seg_path: str, out_path: str, colour_dict: dict, mode: str) -> None:
     """
     Post-processing for WSI-level segmentations.
     """
     seg = np.load(seg_path)
-    if mode == "wsi":
-        seg = wsi_post_proc(seg, fx=1)
-    else:
-        seg = wsi_post_proc(seg, fx=1)#0.5)
+    seg = smooth_ep_ker_boundary(seg, 0.5) # or is it 2    
+    seg = remove_spurious_epith(seg)
     seg_col = np.expand_dims(seg, axis=2)
     seg_col = np.repeat(seg_col, 3, axis=2)
     for key, value in colour_dict.items():
@@ -110,10 +167,13 @@ def segment_epithelium(
     for out in wsi_output:
         basename = os.path.basename(out[0]).split(".")[0]
         outname = os.path.basename(out[1]).split(".")[0]
-        shutil.move(
-            os.path.join(output_dir, "epith/tmp", f"{outname}.1.npy"),
-            os.path.join(layer_dir, basename + ".npy"),
-            )   
+        process_segmentation(
+            seg_path=os.path.join(output_dir, "epith/tmp", f"{outname}.1.npy"),
+            out_path=os.path.join(layer_dir, basename + ".png"),
+            colour_dict=colour_dict,
+            mode=mode,
+        )
+        # process nuclei too!
         shutil.move(
             os.path.join(output_dir, "epith/tmp", f"{outname}.0.dat"),
             os.path.join(nuclei_dir, basename + ".dat"),
@@ -149,7 +209,7 @@ if __name__ == '__main__':
         mode = "wsi" # or tile
 
 
-    colour_dict = {
+    epith_colour_dict = {
         "nolabel": [0, [0  ,   0,   0]],
         "other": [1, [255, 165,   0]],
         "basal": [2, [255, 0,   0]],
@@ -160,7 +220,7 @@ if __name__ == '__main__':
     segment_epithelium(
         input_wsi_dir=input_wsi_dir,
         output_dir=output_dir,
-        colour_dict=colour_dict,
+        colour_dict=epith_colour_dict,
         mode=mode,
         nr_loader_workers=int(args['--nr_loader_workers']),
         nr_post_proc_workers=int(args['--nr_post_proc_workers']),

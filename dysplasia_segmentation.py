@@ -27,13 +27,9 @@ import glob
 import shutil
 
 import numpy as np
-import torch
 import cv2
-from scipy import ndimage
 from skimage import morphology
-from collections import OrderedDict
 
-from tiatoolbox.models.engine.multi_task_segmentor import MultiTaskSegmentor
 from tiatoolbox.models.engine.semantic_segmentor import SemanticSegmentor, IOSegmentorConfig
 from tiatoolbox.utils.misc import imwrite
 
