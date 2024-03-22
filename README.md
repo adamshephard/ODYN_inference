@@ -43,10 +43,10 @@ Below are the main executable scripts in the repository:
 - `run_odyn.py`: main inference script for ODYN, runs the below scripts consecutively (except heatmaps)
 - `dysplasia_segmentation.py`: transformer inference script
 - `epithelium_segmentation.py`: hovernetplus inference script
-- `oed_diagnosis.py`: script to diagnose a slide as OED vs normal (using output from above script)
-- `feature_generation.py`: script to generate features for the final MLP model (using output from above script)
-- `oed_prognosis.py`: main inference script for geenrating the ODYN-score for predicting malignant transformation
-- `heatmap_generation.py`: script to generate heatmaps (needs tidying up)
+- [IN PROGRESS]`oed_diagnosis.py`: script to diagnose a slide as OED vs normal (using output from above script)
+- [IN PROGRESS]`feature_generation.py`: script to generate features for the final MLP model (using output from above script)
+- [IN PROGRESS]`oed_prognosis.py`: main inference script for geenrating the ODYN-score for predicting malignant transformation
+- [IN PROGRESS]`heatmap_generation.py`: script to generate heatmaps (needs tidying up)
 
 
 ## Inference
@@ -76,11 +76,11 @@ Alternatively, to have more control, a user can run each of the stages used by t
 
 #### Dysplasia Segmentation with Transformer
 
-The first stage is to run the Transformer-based model on the WSIs to generate dysplasia segmentations. This is relatively fast and is run at 1.0mpp.
+The first stage is to run the Transformer-based model on the WSIs to generate dysplasia segmentations. This is relatively fast and is run at 1.0mpp. Note the `model_checkpoint` is the path to the Transformer segmentation weights available to download from above.
 
 Usage: <br />
 ```
-  python dysplasia_segmentation.py --input_dir="/path/to/input/slides/or/images/dir/" --output_dir="/path/to/transformer/output/dir/"
+  python dysplasia_segmentation.py --input_dir="/path/to/input/slides/or/images/dir/" --output_dir="/path/to/transformer/output/dir/" --model_checkpoint="/path/to/transformer/checkpoint/"
 ```
 #### Epithelium Segmentation with HoVer-Net+
 
