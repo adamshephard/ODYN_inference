@@ -2,6 +2,10 @@
   <img src="doc/odyn.png" width='350'>
 </p>
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-orange.svg)](https://www.gnu.org/licenses/gpl-3.0)
+  <a href="#cite-this-repository"><img src="https://img.shields.io/badge/Cite%20this%20repository-BibTeX-brightgreen" alt="DOI"></a>
+<br>
+
 # ODYN: Oral DYsplasia Network Inference
 
 This repository provides the ODYN inference code for the models used within the paper [Development and Validation of an Artificial Intelligence-based Pipeline for the Prediction of Malignant Transformation in Oral Epithelial Dysplasia: A Retrospective Multi-Centric Study](). <br />
