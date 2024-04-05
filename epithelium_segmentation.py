@@ -16,7 +16,7 @@ Options:
   --model_checkpoint=<string> Path to model weights.
   --nr_loader_workers=<n>     Number of workers during data loading. [default: 10]
   --nr_post_proc_workers=<n>  Number of workers during post-processing. [default: 10]
-  --batch_size=<n>            Batch size. [default: 8]
+  --batch_size=<n>            Batch size. [default: 16]
 
 Use `epithelium_segmentation.py --help` to show their options and usage
 """
@@ -172,15 +172,15 @@ def segment_epithelium(
     wsi_output = multi_segmentor.predict(
         imgs=wsi_file_list,
         masks=None,
-        save_dir=os.path.join(output_dir, "epith/tmp"),
+        save_dir=os.path.join(output_dir, "tmp"),
         mode=mode, #"wsi",
         on_gpu=True,
         crash_on_exception=True,
     )
 
     # Rename TIAToolbox output files to readability
-    layer_dir = os.path.join(output_dir, "epith", "layers")
-    nuclei_dir = os.path.join(output_dir, "epith", "nuclei")
+    layer_dir = os.path.join(output_dir, "epith")
+    nuclei_dir = os.path.join(output_dir, "nuclei")
     os.makedirs(layer_dir, exist_ok=True)
     os.makedirs(nuclei_dir, exist_ok=True)
 
@@ -214,12 +214,12 @@ if __name__ == '__main__':
     if args['--input_dir']:
         input_wsi_dir = args['--input_dir']
     else:      
-        input_wsi_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/wsis/"
+        input_wsi_dir = "/data/ANTICIPATE/github/testdata/wsis/"
     
     if args['--output_dir']:
         output_dir = args['--output_dir']
     else:
-        output_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/output4/"
+        output_dir = "/data/ANTICIPATE/github/testdata/output/odyn/"
     
     if args['--mode']:
         mode = args['--mode']
@@ -231,7 +231,7 @@ if __name__ == '__main__':
     if args['--model_checkpoint']:
         checkpoint_path = args['--model_checkpoint']
     else:
-        checkpoint_path = "/data/ANTICIPATE/outcome_prediction/ODYN_inference/weights/hovernetplus.tar"
+        checkpoint_path = "/data/ANTICIPATE/github/ODYN_inference/weights/hovernetplus.tar"
         
 
     epith_colour_dict = {
@@ -250,5 +250,5 @@ if __name__ == '__main__':
         mode=mode,
         nr_loader_workers=int(args['--nr_loader_workers']),
         nr_post_proc_workers=int(args['--nr_post_proc_workers']),
-        batch_size=16,#int(args['--batch_size']),
+        batch_size=int(args['--batch_size']),
         )

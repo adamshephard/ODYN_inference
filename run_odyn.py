@@ -38,7 +38,7 @@ from tiatoolbox.utils.misc import imwrite
 
 from dysplasia_segmentation import segment_dysplasia
 from epithelium_segmentation import segment_epithelium
-# from oed_diagnosis import oed_diagnosis
+from oed_diagnosis import combine_masks, oed_diagnosis
 from feature_generation import generate_features
 # from oed_prognosis import oed_prognosis
 
@@ -54,12 +54,12 @@ if __name__ == '__main__':
     if args['--input_dir']:
         input_wsi_dir = args['--input_dir']
     else:      
-        input_wsi_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/wsis/"
+        input_wsi_dir = "/data/ANTICIPATE/github/testdata/wsis/"
     
     if args['--output_dir']:
         output_dir = args['--output_dir']
     else:
-        output_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/output_odyn/"
+        output_dir = "/data/ANTICIPATE/github/testdata/output/odyn/"
     
     if args['--mode']:
         mode = args['--mode']
@@ -71,14 +71,15 @@ if __name__ == '__main__':
     if args['--transformer_weights']:
         transformer_weights = args['--transformer_weights']
     else:
-        transformer_weights = "/data/ANTICIPATE/outcome_prediction/ODYN_inference/weights/transunet_external.tar"
+        transformer_weights = "/data/ANTICIPATE/github/ODYN_inference/weights/transunet_external.tar"
         
     if args['--hovernetplus_weights']:
         hovernetplus_weights = args['--hovernetplus_weights']
     else:
-        hovernetplus_weights = "/data/ANTICIPATE/outcome_prediction/ODYN_inference/weights/hovernetplus.tar"        
+        hovernetplus_weights = "/data/ANTICIPATE/github/ODYN_inference/weights/hovernetplus.tar"        
         
-        
+    oed_diag_threshold = 0.055022543958983 # hardcoded! # dysplasia ratio threshold for determing OED vs normal
+    
     ### 1. Segment Dysplasia ###
     dysp_colour_dict = {
         "nolabel": [0, [0  ,   0,   0]],
@@ -116,9 +117,30 @@ if __name__ == '__main__':
         batch_size=int(args['--batch_size']),
         )
     
-    ### 3. Diagnosis, i.e. OED vs normal ##
-    # odyn_diagnosis = oed_diagnosis()
-    # save diagnosis to csv file
+    ### 3. Diagnosis, i.e. OED vs normal ###
+    new_colour_dict = {
+        "nolabel": [0, [0  ,   0,   0]],
+        "other": [1, [255, 165,   0]],
+        "dysplasia": [2, [255, 0,   0]],
+        "epith": [3, [0,   255,   0]],
+    }  
+    
+    combine_masks(
+        input_epith_dir=os.path.join(output_dir, "epith"),
+        input_dysp_dir=os.path.join(output_dir, "dysplasia"),
+        output_dir=os.path.join(output_dir, "combined"),
+        epith_colour_dict=epith_colour_dict,
+        dysp_colour_dict=dysp_colour_dict,
+        new_colour_dict=new_colour_dict,
+    )
+    
+    oed_diagnosis(
+        input_mask_dir=os.path.join(output_dir, "combined"),
+        output_dir=os.path.join(output_dir, "diagnoses"),
+        colour_dict=new_colour_dict,
+        threshold=oed_diag_threshold # hardcoded
+        )
+    
     
     ### 4. Create patch-level features ###
     generate_features(

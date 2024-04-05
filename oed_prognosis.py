@@ -170,7 +170,8 @@ def process(data_file, data_path, checkpoint_path, output,
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__, help=False, options_first=True)
+    args = docopt(__doc__, help=False, options_first=True, 
+                    version='ODYN Prognosis')
 
     if args['--help']:
         print(__doc__)
@@ -179,17 +180,17 @@ if __name__ == '__main__':
     if args['--input_data_file']:
         input_data_file = args['--input_data_file']
     else:      
-        input_data_file = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/inference_data.csv"   
+        input_data_file = "/data/ANTICIPATE/github/testdata/inference_data.csv"   
     
     if args['--input_ftrs_dir']:
         input_ftrs_dir = args['--input_ftrs_dir']
     else:
-        input_ftrs_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/output/features/0.5-mpp_512_256_epith-0.5/nuclear/tiles_pt_files/"
+        input_ftrs_dir = "/data/ANTICIPATE/github/testdata/output/odyn/features/0.5-mpp_512_256_epith-0.5/nuclear/tiles_pt_files/"
         
     if args['--output_dir']:
         output_dir = args['--output_dir']
     else:
-        output_dir = "/data/ANTICIPATE/outcome_prediction/MIL/github_testdata/output/OMTscoring/"
+        output_dir = "/data/ANTICIPATE/github/testdata/output/odyn/ODYNscoring/"
         
     if args['--model_checkpoint']:
         checkpoint_path = args['--model_checkpoint']
