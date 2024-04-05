@@ -17,7 +17,7 @@ from tiatoolbox.utils.misc import imread, imwrite
 from tiatoolbox.wsicore.wsireader import WSIReader, VirtualWSIReader, WSIMeta
 from tiatoolbox.tools import patchextraction
 
-from utils.utils import colour2gray, white2binary, mask2epithmask
+from utils.utils import colour2gray, white2binary, mask2epithmask, decolourise
 
 import sys
 sys.path.append('/data/ANTICIPATE/outcome_prediction/MIL/pipeline/code/')
@@ -32,6 +32,7 @@ device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 
 def get_nuc_dict(nuc_data, bbox, color_dict, layers=None, draw=None):
     # Layers argument to refine the epithelial classes following HoVer-Net+ postprocessing
+    color_dict = {v[0]: v[1] for k,v in color_dict.items()}
     start_x, start_y, end_x, end_y = bbox
     count = 0
     new_dict = {}
@@ -60,10 +61,10 @@ def get_nuc_dict(nuc_data, bbox, color_dict, layers=None, draw=None):
                 'type_prob': nuc_data[n]['prob'],
                 'type': nuc_data[n]['type'],
             }
-            if layers is not None:
-                if nuc_type in [2,3,4]:
-                    tissue_type = int(layers[int(centroid_new[1]), int(centroid_new[0])])
-                    nuc_dict['type'] = tissue_type
+            # if layers is not None:
+            #     if nuc_type in [2,3]:
+            #         tissue_type = int(layers[int(centroid_new[1]), int(centroid_new[0])])
+            #         nuc_dict['type'] = tissue_type
             new_dict[str(count)] = nuc_dict        
             if draw is not None:
                 draw = cv2.drawContours(draw, [cntrs_new], -1, color_dict[nuc_type], 2).astype('uint8')
@@ -77,7 +78,8 @@ def create_feature_patches(
     wsi_path,
     mask_path,
     nuclei_path,
-    colour_dict,
+    mask_colour_dict,
+    nuc_colour_dict,
     patch_size,
     stride,
     output_res,
@@ -89,7 +91,7 @@ def create_feature_patches(
     
     case, _ = os.path.basename(wsi_path).split(".")
     if output_dir is not None:
-        output_dir_ftrs = os.path.join(output_dir, f'{output_res}-mpp_{patch_size}_{stride}_epith-{epith_thresh}')
+        output_dir_ftrs = os.path.join(output_dir, f'{output_res}-mpp_{patch_size}_{stride}_dysplasia-{epith_thresh}')
 
     if viz:
         over_dir = os.path.join(output_dir_ftrs, 'overlays')
@@ -103,14 +105,19 @@ def create_feature_patches(
 
     try:
         layers = np.load(mask_path)
-        layers_new = layers.copy()
-        layers_new[layers_new == 1] = 0
-        layers_new[layers_new >= 2] = 1
-        layer_mask = VirtualWSIReader(layers_new*255, info=meta)
     except:
-        print(f'Failed for case {case}')
-        return
+        try:
+            layers = imread(mask_path)
+            layers = decolourise(layers, mask_colour_dict)
+        except:
+            print(f'Failed for case {case}')
+            return
 
+    layers_new = layers.copy()
+    layers_new[layers_new == 1] = 0
+    layers_new[layers_new >= 2] = 1
+    layer_mask = VirtualWSIReader(layers_new*255, info=meta)
+        
     if np.max(layers_new) == 0: # i.e. no epith detected
         return
 
@@ -164,7 +171,9 @@ def create_feature_patches(
                     pad_constant_values=0,
                     coord_space="resolution",
         )
-        patch_mask_g = colour2gray(patch_mask, colour_dict)
+        # patch_mask_g = colour2gray(patch_mask, colour_dict)
+        # patch_mask_g = decolourise(patch_mask, colour_dict)
+        # patch_mask_g = colour2gray(patch_mask, [])
         epith_mask_binary = white2binary(patch_mask)
         patch_name = f'{case}_{bounds[0]}_{bounds[1]}_{bounds[2]}_{bounds[3]}'
 
@@ -178,7 +187,8 @@ def create_feature_patches(
                 continue
             
             # 3. [Optional] Refine nuclei classes
-            nuc_dict, overlay = get_nuc_dict(inst_dict, bounds, colour_dict, patch_mask_g, patch)
+            # nuc_dict, overlay = get_nuc_dict(inst_dict, bounds, colour_dict, patch_mask_g, patch)
+            nuc_dict, overlay = get_nuc_dict(inst_dict, bounds, nuc_colour_dict, draw=patch)
             try:
                 morph_df, spatial_df = get_nuc_features(nuc_dict, patch_name, nr_types=2)
                 ftrs_df = pd.concat([morph_df, spatial_df], axis=0)

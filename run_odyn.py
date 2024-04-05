@@ -33,7 +33,6 @@ import cv2
 from scipy import ndimage
 from skimage import morphology
 from collections import OrderedDict
-
 from tiatoolbox.utils.misc import imwrite
 
 from dysplasia_segmentation import segment_dysplasia
@@ -145,7 +144,8 @@ if __name__ == '__main__':
     ### 4. Create patch-level features ###
     generate_features(
         input_wsi_dir=input_wsi_dir,
-        hovernetplus_dir=os.path.join(output_dir, "hovernetplus"),
+        mask_dir=os.path.join(output_dir, "combined"),
+        nuclei_dir=os.path.join(output_dir, "nuclei"),
         output_dir=os.path.join(output_dir, "features"),
         colour_dict=epith_colour_dict,
         num_processes=int(args['--nr_post_proc_workers']),

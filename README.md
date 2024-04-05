@@ -21,7 +21,7 @@ Note, this repository is for use with oral tissue H&E-stained WSIs/ROIs alone. W
 ## TO DO
 - [X] Add post processing to epithelium segmentation with HoVer-Net+
 - [X] OED diagnosis script
-- [ ] Feature generation script
+- [X] Feature generation script
 - [ ] OED prognosis script
 - [ ] Run ODYN script and tidy output of odyn score/diagnosis
 - [ ] Heatmap script

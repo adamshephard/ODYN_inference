@@ -1,5 +1,5 @@
 """
-Generate morphological/spatial features for MLP (based on HoVer-Net+ output) for OMTscoring.
+Generate morphological/spatial features for MLP (based on HoVer-Net+/Transformer output).
 
 Usage:
   feature_generation.py [options] [--help] [<args>...]
@@ -11,7 +11,8 @@ Options:
   --version                   Show version.
 
   --input_dir=<string>        Path to input directory containing slides or images.
-  --hovernetplus_dir=<string> Path to HoVer-Net+ output directory.
+  --mask_dir=<string>         Path to mask directory.
+  --nuclei_dir=<string>       Path to nuclei directory.
   --output_dir=<string>       Path to output directory to save features.
 
 Use `feature_generation.py --help` to show their options and usage
@@ -40,9 +41,11 @@ device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 def process(
     feature_type,
     wsi_path,
-    hovernetplus_dir,
+    mask_dir,
+    nuclei_dir,
     output_dir,
-    colour_dict,
+    mask_colour_dict,
+    nuc_colour_dict,
     patch_size,
     stride,
     output_res,
@@ -52,16 +55,17 @@ def process(
     ):
     
     case, _ = os.path.basename(wsi_path).split('.')
-    mask_path = os.path.join(hovernetplus_dir, 'layers', f'{case}.npy')
-    nuclei_path = os.path.join(hovernetplus_dir, 'nuclei', f'{case}.dat')
-    output_dir_ftrs = os.path.join(output_dir, f'{output_res}-mpp_{patch_size}_{stride}_epith-{epith_thresh}')
+    mask_path = os.path.join(mask_dir, f'{case}.png')
+    nuclei_path = os.path.join(nuclei_dir, f'{case}.dat')
+    output_dir_ftrs = os.path.join(output_dir, f'{output_res}-mpp_{patch_size}_{stride}_dysplasia-{epith_thresh}')
 
     feature_info = create_feature_patches(
         feature_type,
         wsi_path,
         mask_path,
         nuclei_path,
-        colour_dict,
+        mask_colour_dict,
+        nuc_colour_dict,
         patch_size,
         stride,
         output_res,
@@ -98,7 +102,7 @@ def process(
         save_hdf5(os.path.join(h5_dir, f'{case}.h5'), asset_dict, attr_dict= None, mode='w')
         features = torch.from_numpy(features_all)
         torch.save(features, os.path.join(pt_dir, f'{case}.pt'))
-        ftr_df_all.to_csv(os.path.join(csv_dir, f'{case}.csv')) 
+        ftr_df_all.to_csv(os.path.join(csv_dir, f'{case}.csv'), index=False) 
 
     if (feature_type == 'resnet') or (feature_type == 'both'):
         asset_dict = {'features': np.stack(deep_features_all), 'coords': np.stack(deep_coords)}
@@ -116,14 +120,16 @@ def process(
         for coord in deep_coords:
             deep_coords_names.append(f"{coord[0]}_{coord[1]}_{coord[2]}_{coord[3]}")
         deep_df.insert(loc=0, column='coords', value=np.stack(deep_coords_names))
-        deep_df.to_csv(os.path.join(csv_dir, f'{case}.csv'))
+        deep_df.to_csv(os.path.join(csv_dir, f'{case}.csv'), index=False)
     return
 
 def generate_features(
     input_wsi_dir: str,
-    hovernetplus_dir: str,
+    mask_dir: str,
+    nuclei_dir: str,
     output_dir: str,
-    colour_dict: dict | dict = None,
+    mask_colour_dict: dict,
+    nuc_colour_dict: dict,    
     feature_type: str | str = "both", # Choose from: "nuclear", "resnet", "both"
     patch_size: int | int = 512,
     stride: int | int = 256,
@@ -133,17 +139,8 @@ def generate_features(
     num_processes: int = 10,
     )-> None:
     """
-    Generate morphological/spatial features for MLP (based on HoVer-Net+ output) for classification.
+    Generate morphological/spatial features for MLP (based on HoVer-Net+/Transformer output) for classification.
     """
-
-    if colour_dict is None:
-        colour_dict = {
-                0: (0,0,0),
-                1: (255,165,0),
-                2: (255,0,0),
-                3: (0,255,0),
-                4: (0,0,255)
-            }
     
     wsi_file_list = glob.glob(input_wsi_dir + "*")
     num_processes = len(wsi_file_list) if len(wsi_file_list) < num_processes else num_processes
@@ -164,9 +161,11 @@ def generate_features(
             args=(
                 feature_type,
                 n,
-                hovernetplus_dir,
+                mask_dir,
+                nuclei_dir,
                 output_dir,
-                colour_dict,
+                mask_colour_dict,
+                nuc_colour_dict,
                 patch_size,
                 stride,
                 output_res,
@@ -190,10 +189,15 @@ if __name__ == "__main__":
     else:      
         input_wsi_dir = "/data/ANTICIPATE/github/testdata/wsis/"
     
-    if args['--hovernetplus_dir']:
-        hovernetplus_dir = args['--hovernetplus_dir']
+    if args['--mask_dir']:
+        mask_dir = args['--mask_dir']
     else:
-        hovernetplus_dir = "/data/ANTICIPATE/github/testdata/output/hovernetplus/"
+        mask_dir = "/data/ANTICIPATE/github/testdata/output/odyn/combined/"
+    
+    if args['--nuclei_dir']:
+        nuclei_dir = args['--nuclei_dir']
+    else:
+        nuclei_dir = "/data/ANTICIPATE/github/testdata/output/odyn/nuclei/"       
         
     if args['--output_dir']:
         output_dir = args['--output_dir']
@@ -203,13 +207,17 @@ if __name__ == "__main__":
     ### Input/Output Parameters ###
     num_processes = 4
     feature_type = "both" # Choose from: "nuclear", "resnet", "both"
-    colour_dict = {
-            0: (0,0,0),
-            1: (255,165,0),
-            2: (255,0,0),
-            3: (0,255,0),
-            4: (0,0,255)
-        }
+    mask_colour_dict = {
+        "nolabel": [0, [0  ,   0,   0]],
+        "other": [1, [255, 165,   0]],
+        "dysplasia": [2, [255, 0,   0]],
+        "epith": [3, [0,   255,   0]],
+    } 
+    nuc_colour_dict = {
+        "nolabel": [0, [0  ,   0,   0]],
+        "other": [1, [255, 165,   0]],
+        "epith": [2, [255, 0,   0]],
+    }
     patch_size = 512 # desired output patch size
     stride = 256 # stride for sliding window of patches
     output_res = 0.5 # desired resolution of output patches
@@ -218,9 +226,11 @@ if __name__ == "__main__":
     
     generate_features(
         input_wsi_dir,
-        hovernetplus_dir,
+        mask_dir,
+        nuclei_dir,
         output_dir,
-        colour_dict,
+        mask_colour_dict,
+        nuc_colour_dict,
         "both", # Choose from: "nuclear", "resnet", "both"
         patch_size,
         stride,
