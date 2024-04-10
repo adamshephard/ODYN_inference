@@ -102,7 +102,7 @@ A user can run the ODYN pipeline on all their slides using the below command. Th
 
 Usage: <br />
 ```
-  python run_odyn.py --input_dir="/path/to/input/slides/or/images/dir/" --output_dir="/path/to/output/dir/" --transformer_weights="/path/to/hovernetplus/checkpoint/" --hovernetplus_weights="/path/to/hovernetplus/checkpoint/" --mlp_weights="/path/to/mlp/checkpoint/" 
+  python run_odyn.py --input_data_file="/path/to/input/data/file/" --input_dir="/path/to/input/slides/or/images/dir/" --output_dir="/path/to/output/dir/" --transformer_weights="/path/to/hovernetplus/checkpoint/" --hovernetplus_weights="/path/to/hovernetplus/checkpoint/" --mlp_weights="/path/to/mlp/checkpoint/" --mlp_norm_params="/path/to/mlp/norm/params/" --mlp_cutoff_file="/path/to/mlp/cutoffs/"
 ```
 
 Alternatively, to have more control, a user can run each of the stages used by the ODYN model at a time. These are shown below.

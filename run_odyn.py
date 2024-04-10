@@ -57,7 +57,7 @@ if __name__ == '__main__':
     if args['--input_data_file']:
         input_data_file = args['--input_data_file']
     else:      
-        input_data_file = "/data/ANTICIPATE/github/testdata/wsis/"
+        input_data_file = "/data/ANTICIPATE/github/testdata/sheffield_inference_data.csv" 
     
     if args['--input_dir']:
         input_wsi_dir = args['--input_dir']
