@@ -7,13 +7,13 @@ Usage:
   oed_prognosis.py (-h | --help)
   
 Options:
-  -h --help                   Show this string.
-  --version                   Show version.
+  -h --help                    Show this string.
+  --version                    Show version.
 
-  --input_data_file=<string>  Path to csv file containing fold information and targets per slide.
-  --input_ftrs_dir=<string>   Path to folder containing features. Stored as indiviudal .tar files containing each tile's features
-  --output_dir=<string>       Path to output directory to save results.
-  --model_checkpoint=<string> Path to model checkpoint.
+  --input_data_file=<string>   Path to csv file containing fold information and targets per slide.
+  --input_ftrs_dir=<string>    Path to folder containing features. Stored as indiviudal .tar files containing each tile's features.
+  --output_dir=<string>        Path to output directory to save results.
+  --model_checkpoint=<string>  Path to model checkpoint.
 
 Use `oed_prognosis.py --help` to show their options and usage
 """
@@ -36,7 +36,7 @@ from sklearn.metrics import auc, roc_curve, f1_score, precision_recall_curve, av
 from tqdm import tqdm
 
 from dataloader.mil_reader import featuresdataset_inference
-from models.net_desc import MLP, FC
+from models.net_desc import MLP
 from utils.metrics import compute_aggregated_predictions, compute_aggregated_probabilities, group_avg_df, get_topk_patches, get_bottomk_patches
 
 
@@ -180,36 +180,36 @@ if __name__ == '__main__':
     if args['--input_data_file']:
         input_data_file = args['--input_data_file']
     else:      
-        input_data_file = "/data/ANTICIPATE/github/testdata/inference_data.csv"   
+        input_data_file = "/data/ANTICIPATE/github/testdata/sheffield_inference_data.csv"   
     
     if args['--input_ftrs_dir']:
         input_ftrs_dir = args['--input_ftrs_dir']
     else:
-        input_ftrs_dir = "/data/ANTICIPATE/github/testdata/output/odyn/features/0.5-mpp_512_256_dysepith-0.5/nuclear/tiles_pt_files/"
+        input_ftrs_dir = "/data/ANTICIPATE/github/testdata/output/odyn/features/0.5-mpp_512_256_dysplasia-0.5/nuclear/tiles_pt_files/"
         
     if args['--output_dir']:
         output_dir = args['--output_dir']
     else:
-        output_dir = "/data/ANTICIPATE/github/testdata/output/odyn/ODYNscoring/"
+        output_dir = "/data/ANTICIPATE/github/testdata/output/odyn/prognosis/"
         
     if args['--model_checkpoint']:
         checkpoint_path = args['--model_checkpoint']
     else:
-        checkpoint_path = "/data/ANTICIPATE/outcome_prediction/MIL/idars/output/train-sheffield_test-belfast,birmingham,brazil/transformation/mlp/morph_features_104_64ftrs_50eps_corrected_belfast_train_thr/oed/repeat_2/best0/checkpoint_best_AUC.pth"
-    
+        # checkpoint_path = "/data/ANTICIPATE/outcome_prediction/MIL/idars/output/train-sheffield_test-belfast,birmingham,brazil/transformation/mlp/morph_features_104_64ftrs_50eps_corrected_belfast_train_thr/oed/repeat_2/best0/checkpoint_best_AUC.pth"
+        checkpoint_path = "/data/ANTICIPATE/github/ODYN_inference/weights/repeat2_fold3.pth"
+        
 
     ### Inputs Files and Paramaters ###
     batch_size = 256          
     workers = 6                             # number of data loading workers
-    aggregation_method = "avg prob"         # method for aggregating predictions
-    cutoff = 0.0379912272659                # cutoff for aggregation method used (found through training)
+    aggregation_method = "avgtop"           # method for aggregating predictions
+    cutoff = 0.297968705257644              # cutoff for aggregation method used (found through training)
     method = "mlp"                          # model being used, for paper use MLP, but alternatives are ResNet34
     features = "morph_features_104_64ftrs"  # input features. Could also be deep features e.g. resnet
     outcome = "transformation"              # prediction outcome
     k = 5                                   # top/bottom patches to keep
     
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
         
     process(
         input_data_file, input_ftrs_dir, checkpoint_path, output_dir,

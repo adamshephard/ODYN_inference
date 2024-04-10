@@ -100,8 +100,15 @@ def process(
         os.makedirs(pt_dir, exist_ok=True)
         os.makedirs(csv_dir, exist_ok=True)
         save_hdf5(os.path.join(h5_dir, f'{case}.h5'), asset_dict, attr_dict= None, mode='w')
-        features = torch.from_numpy(features_all)
-        torch.save(features, os.path.join(pt_dir, f'{case}.pt'))
+        # features = torch.from_numpy(features_all)
+        # torch.save(features, os.path.join(pt_dir, f'{case}.pt'))
+        # No longer save pt with bag of features.   
+        # Now save individual pt files for each tile
+        for idx, (ftrs, coords) in enumerate(zip(asset_dict["features"], asset_dict["coords"])):
+            tile_name = f'{case}_{coords[0]}_{coords[1]}_{coords[2]}_{coords[3]}'
+            out_tile_pt_dir = os.path.join(pt_dir, case)
+            os.makedirs(out_tile_pt_dir, exist_ok=True)
+            torch.save(ftrs, os.path.join(out_tile_pt_dir, f'{tile_name}.pt'))     
         ftr_df_all.to_csv(os.path.join(csv_dir, f'{case}.csv'), index=False) 
 
     if (feature_type == 'resnet') or (feature_type == 'both'):
@@ -113,14 +120,21 @@ def process(
         os.makedirs(pt_dir, exist_ok=True)
         os.makedirs(csv_dir, exist_ok=True)
         save_hdf5(os.path.join(h5_dir, f'{case}.h5'), asset_dict, attr_dict= None, mode='w')
-        features = torch.from_numpy(np.stack(deep_features_all))
-        torch.save(features, os.path.join(pt_dir, f'{case}.pt'))
+        # features = torch.from_numpy(np.stack(deep_features_all))
+        # torch.save(features, os.path.join(pt_dir, f'{case}.pt'))
+        # Now save individual pt files for each tile
+        for idx, (ftrs, coords) in enumerate(zip(asset_dict["features"], asset_dict["coords"])):
+            tile_name = f'{case}_{coords[0]}_{coords[1]}_{coords[2]}_{coords[3]}'
+            out_tile_pt_dir = os.path.join(pt_dir, case)
+            os.makedirs(out_tile_pt_dir, exist_ok=True)
+            torch.save(ftrs, os.path.join(out_tile_pt_dir, f'{tile_name}.pt'))
         deep_df = pd.DataFrame.from_records(deep_features_all)
         deep_coords_names = []
         for coord in deep_coords:
             deep_coords_names.append(f"{coord[0]}_{coord[1]}_{coord[2]}_{coord[3]}")
         deep_df.insert(loc=0, column='coords', value=np.stack(deep_coords_names))
         deep_df.to_csv(os.path.join(csv_dir, f'{case}.csv'), index=False)
+
     return
 
 def generate_features(
@@ -142,7 +156,7 @@ def generate_features(
     Generate morphological/spatial features for MLP (based on HoVer-Net+/Transformer output) for classification.
     """
     
-    wsi_file_list = glob.glob(input_wsi_dir + "*")
+    wsi_file_list = glob.glob(input_wsi_dir + "*.*")
     num_processes = len(wsi_file_list) if len(wsi_file_list) < num_processes else num_processes
 
     # Start multi-processing
