@@ -1,5 +1,6 @@
 """
-Inference script for generating ODYN-scores.
+Inference script for generating ODYN-scores. This method uses one fold from 
+cross-validation alone.
 
 Usage:
   oed_prognosis.py [options] [--help] [<args>...]
