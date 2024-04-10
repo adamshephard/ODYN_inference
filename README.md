@@ -23,7 +23,7 @@ Note, this repository is for use with oral tissue H&E-stained WSIs/ROIs alone. W
 - [X] OED diagnosis script
 - [X] Feature generation script
 - [X] Get feature generation script to create tiles in desired way for MIL model, i.e. per patch
-- [ ] OED prognosis script
+- [X] OED prognosis script
 - [ ] Run ODYN script and tidy output of odyn score/diagnosis
 - [ ] Heatmap script
 - [X] Add interactive demo

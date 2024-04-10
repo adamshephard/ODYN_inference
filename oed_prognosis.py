@@ -60,10 +60,44 @@ def get_metrics(y_true, y_prob, cutoff):
         "average_precision": average_precision
     }
 
-def process(data_file, data_path, norm_parameters, checkpoint_path, 
-            nr_repeats, nr_folds, output, batch_size, workers, 
-            aggregation_method, cutoff, method, features, outcome, k):
-    
+def oed_prognosis(
+    data_file: str,
+    data_path: str,
+    norm_parameters: str,
+    checkpoint_path: str, 
+    output: str, 
+    nr_repeats: int | int = 3, 
+    nr_folds: int | int = 5, 
+    batch_size: int | int = 256,
+    workers: int | int = 8, 
+    aggregation_method: str | str = "avgtop", 
+    cutoff: str | str = None, 
+    method: str | str = "mlp", 
+    features: str | str = "morph_features_104_64ftrs",  
+    outcome: str | str = "transformation", 
+    k: int | int = 5,
+    ) -> None:
+    """
+    Inference script for generating ODYN-scores. This uses repeated cross-validation.
+
+    Args:
+        data_file: Path to csv file containing fold information and targets per slide.
+        data_path: Path to folder containing features. Stored as indiviudal .tar files containing each tile's features.
+        norm_parameters: Path to file containing normalization parameters.
+        checkpoint_path: Path to model checkpoint.
+        nr_repeats: Number of cross-validation repeats.
+        nr_folds: Number of cross-validation folds.
+        output: Path to output directory to save results.
+        batch_size: Batch size.
+        workers: Number of workers.
+        aggregation_method: Aggregation method.
+        cutoff: Cutoff file.
+        method: Method, i.e. MLP.
+        features: Features.
+        outcome: Outcome.
+        k: K top patches.
+    """
+
     # cnn inference 
     def inference(loader, model):
         model.eval()
@@ -312,8 +346,8 @@ if __name__ == '__main__':
     
     os.makedirs(output_dir, exist_ok=True)
         
-    process(
-        input_data_file, input_ftrs_dir, norm_parameters, checkpoint_path, nr_repeats, 
-        nr_folds, output_dir, batch_size, workers, aggregation_method, cutoff_file, method, 
-        features, outcome, k
+    oed_prognosis(
+        input_data_file, input_ftrs_dir, norm_parameters, checkpoint_path, output_dir,
+        nr_repeats, nr_folds, batch_size, workers, aggregation_method, cutoff_file,
+        method, features, outcome, k
         )
