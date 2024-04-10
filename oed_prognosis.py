@@ -1,5 +1,5 @@
 """
-Inference script for OMTscoring.
+Inference script for generating ODYN-scores.
 
 Usage:
   oed_prognosis.py [options] [--help] [<args>...]
@@ -13,6 +13,7 @@ Options:
   --input_data_file=<string>   Path to csv file containing fold information and targets per slide.
   --input_ftrs_dir=<string>    Path to folder containing features. Stored as indiviudal .tar files containing each tile's features.
   --output_dir=<string>        Path to output directory to save results.
+  --norm_parameters=<string>   Path to file containing normalization parameters.
   --model_checkpoint=<string>  Path to model checkpoint.
 
 Use `oed_prognosis.py --help` to show their options and usage
@@ -32,17 +33,19 @@ import torch.backends.cudnn as cudnn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 import torchvision.models as models
-from sklearn.metrics import auc, roc_curve, f1_score, precision_recall_curve, average_precision_score
+from sklearn.metrics import auc, roc_curve, f1_score, precision_recall_curve, average_precision_score, precision_score, recall_score
 from tqdm import tqdm
 
 from dataloader.mil_reader import featuresdataset_inference
 from models.net_desc import MLP
 from utils.metrics import compute_aggregated_predictions, compute_aggregated_probabilities, group_avg_df, get_topk_patches, get_bottomk_patches
+from sklearn.metrics import recall_score
 
 
-def process(data_file, data_path, checkpoint_path, output,
+def process(data_file, data_path, norm_parameters, checkpoint_path, output,
         batch_size, workers, aggregation_method, cutoff,
         method, features, outcome, k):
+    
     # cnn inference 
     def inference(loader, model):
         model.eval()
@@ -100,7 +103,9 @@ def process(data_file, data_path, checkpoint_path, output,
 
     #loading data
     # train set
-    test_dset = featuresdataset_inference(data_path=data_path, data_frame=test_data, transform=trans_Valid, raw_images=raw_images)
+    norm_params = pd.read_csv(norm_parameters, index_col=0)
+    norm_params = [list(norm_params['mean']), list(norm_params['std'])]
+    test_dset = featuresdataset_inference(data_path=data_path, data_frame=test_data, transform=trans_Valid, raw_images=raw_images, norm=norm_params)
 
     test_loader = torch.utils.data.DataLoader(
         test_dset,
@@ -164,9 +169,11 @@ def process(data_file, data_path, checkpoint_path, output,
     out_name2 = os.path.join(output, f'predictions.csv')
     m_data.to_csv(out_name2, index=False)
 
-    summary_df = pd.DataFrame({'f1_score': f1, 'auroc': roc_auc, 'precision': precision, 'recall': recall, 'average_precision': average_precision})
+    precision = precision_score(y_true, y_pred)
+    recall = recall_score(y_true, y_pred)
+    summary_df = pd.DataFrame({'f1_score': f1, 'auroc': roc_auc, 'precision': precision, 'recall': recall, 'average_precision': average_precision}, index=[0])
     summary_out_name = os.path.join(output, f'summary_metrics.csv')
-    summary_df.to_csv(summary_out_name)
+    summary_df.to_csv(summary_out_name, index=False)
 
 
 if __name__ == '__main__':
@@ -185,13 +192,18 @@ if __name__ == '__main__':
     if args['--input_ftrs_dir']:
         input_ftrs_dir = args['--input_ftrs_dir']
     else:
-        input_ftrs_dir = "/data/ANTICIPATE/github/testdata/output/odyn/features/0.5-mpp_512_256_dysplasia-0.5/nuclear/tiles_pt_files/"
+        input_ftrs_dir = "/data/ANTICIPATE/github/testdata/output/odyn/features/0.5-mpp_512_256_dysplasia-0.5/nuclear/pt_files/"
         
     if args['--output_dir']:
         output_dir = args['--output_dir']
     else:
         output_dir = "/data/ANTICIPATE/github/testdata/output/odyn/prognosis/"
-        
+    
+    if args['--norm_parameters']:
+        norm_parameters = args['--norm_parameters']
+    else:
+        norm_parameters = "/data/ANTICIPATE/github/ODYN_inference/models/norm_params/repeat2_fold3.csv"
+    
     if args['--model_checkpoint']:
         checkpoint_path = args['--model_checkpoint']
     else:
@@ -212,5 +224,5 @@ if __name__ == '__main__':
     os.makedirs(output_dir, exist_ok=True)
         
     process(
-        input_data_file, input_ftrs_dir, checkpoint_path, output_dir,
+        input_data_file, input_ftrs_dir, norm_parameters, checkpoint_path, output_dir,
         batch_size, workers, aggregation_method, cutoff, method, features, outcome, k)

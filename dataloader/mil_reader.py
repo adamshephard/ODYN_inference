@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 import random
 from PIL import Image
 from PIL import ImageFile
@@ -9,7 +10,7 @@ import torch
 
 
 class featuresdataset_inference(data.Dataset):
-    def __init__(self, data_path, data_frame, raw_images=False, transform=None):
+    def __init__(self, data_path, data_frame, raw_images=False, transform=None, norm=None):
         # opens data dictionary (lib)
         self.data_path = data_path
         self.data_frame = data_frame
@@ -26,7 +27,7 @@ class featuresdataset_inference(data.Dataset):
             cohort = list_of_cohorts[i]
             label = data_frame.loc[(data_frame['wsi']==case) & (data_frame['cohort']==cohort)]['label'].item()
             t = []
-            path = os.path.join(self.data_path, case)
+            path = os.path.join(self.data_path, str(case))
 
             # if os.path.exists(path):
             for f in os.listdir(path):
@@ -52,7 +53,18 @@ class featuresdataset_inference(data.Dataset):
         self.transform = transform
         self.raw_images = raw_images
         self.cohorts = cohorts
-
+        self.norm = norm
+        
+    def feature_normalisation(self, features):
+        ftrs = features.numpy()
+        # Z-score normalisation
+        try:
+            ftrs_normed = (features.numpy() - np.asarray(self.norm.iloc[0])) / (np.asarray(self.norm.iloc[1]))
+        except:
+            ftrs_normed = (features.numpy() - self.norm[0]) / (self.norm[1])
+            
+        return torch.tensor(ftrs_normed)
+    
     def __getitem__(self,index):
         tile = self.tiles[index]
         case = os.path.basename(tile).split('_')[0]
@@ -89,6 +101,8 @@ class featuresdataset_wsi_inference(data.Dataset):
                 img = self.transform(img)
         else:
             img = torch.from_numpy(tile)
+            if self.norm is not None:
+                img = self.feature_normalisation(img)
         return [img, coords]
 
     def __len__(self):
