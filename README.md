@@ -29,7 +29,7 @@ Note, this repository is for use with oral tissue H&E-stained WSIs/ROIs alone. W
 - [X] Add interactive demo
 - [ ] Add nuclei (as DBs) and heatmaps, and more slides to interactive demo.
 - [X] Add new HoVer-Net+ weights
-- [ ] Upload CV model weights
+- [X] Upload CV model weights
 - [X] License information
 - [ ] Add pre print and citation information
 - [ ] Make repo public
@@ -64,8 +64,8 @@ Below are the main executable scripts in the repository:
 - `dysplasia_segmentation.py`: transformer inference script
 - `epithelium_segmentation.py`: hovernetplus inference script
 - `oed_diagnosis.py`: script to diagnose a slide as OED vs normal (using output from above script)
-- [IN PROGRESS]`feature_generation.py`: script to generate features for the final MLP model (using output from above script)
-- [IN PROGRESS]`oed_prognosis.py`: main inference script for geenrating the ODYN-score for predicting malignant transformation
+- `feature_generation.py`: script to generate features for the final MLP model (using output from above script)
+- `oed_prognosis.py`: main inference script for geenrating the ODYN-score for predicting malignant transformation
 - [IN PROGRESS]`heatmap_generation.py`: script to generate heatmaps (needs tidying up)
 
 
