@@ -24,13 +24,13 @@ Note, this repository is for use with oral tissue H&E-stained WSIs/ROIs alone. W
 - [X] Feature generation script
 - [X] Get feature generation script to create tiles in desired way for MIL model, i.e. per patch
 - [X] OED prognosis script
-- [ ] Run ODYN script and tidy output of odyn score/diagnosis
+- [X] Run ODYN script and tidy output of odyn score/diagnosis
 - [ ] Heatmap script
 - [X] Add interactive demo
 - [ ] Add nuclei (as DBs) and heatmaps, and more slides to interactive demo.
 - [X] Add new HoVer-Net+ weights
 - [ ] Upload CV model weights
-- [ ] License information
+- [X] License information
 - [ ] Add pre print and citation information
 - [ ] Make repo public
 
@@ -92,7 +92,7 @@ We use the following weights in this work. If any of the models or checkpoints a
 
 - The Transformer model weights (for dyplasia segmentation) obtained from training on the Sheffield OED dataset: [OED Transformer checkpoint](https://drive.google.com/file/d/1EF3ItKmYhtdOy5aV9CJZ0a-g03LDaVy4/view?usp=sharing). 
 - The HoVer-Net+ model weights (for epithelium segmentation) obtained from training on the Sheffield OED dataset: [OED HoVer-Net+ checkpoint](https://drive.google.com/file/d/1D2OQhHv-5e9ncRfjv2QM8HE7PAWoS79h/view?usp=sharing). Note, these weights are updated compared to TIAToolbox's and are those obtained in this [paper](https://arxiv.org/abs/2307.03757).
-- The MLP model weights obtained from training on each fold of the Sheffield OED dataset: [OED MLP checkpoints](). 
+- The MLP model weights obtained from training on each fold of the Sheffield OED dataset: [OED MLP checkpoints](https://drive.google.com/drive/folders/1pXbIiRpUbgjqcz-I1gIOurTC5ZdRizjM?usp=sharing). 
 
 ### Usage
 
