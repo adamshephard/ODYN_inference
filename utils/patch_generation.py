@@ -114,8 +114,9 @@ def create_feature_patches(
             return
 
     layers_new = layers.copy()
+    layers_new[layers_new == 3] = 0
     layers_new[layers_new == 1] = 0
-    layers_new[layers_new >= 2] = 1
+    layers_new[layers_new == 2] = 1
     layer_mask = VirtualWSIReader(layers_new*255, info=meta)
         
     if np.max(layers_new) == 0: # i.e. no epith detected

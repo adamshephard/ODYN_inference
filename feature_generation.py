@@ -236,7 +236,7 @@ if __name__ == "__main__":
     stride = 256 # stride for sliding window of patches
     output_res = 0.5 # desired resolution of output patches
     layer_res = 0.5 # resolution of layer segmentation from HoVer-Net+ in MPP
-    epith_thresh = 0.5 # threshold for ratio of epithelium required to be in a patch to use patch
+    epith_thresh = 0.25 # threshold for ratio of epithelium required to be in a patch to use patch
     
     generate_features(
         input_wsi_dir,

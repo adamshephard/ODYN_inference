@@ -309,7 +309,7 @@ if __name__ == '__main__':
     if args['--input_ftrs_dir']:
         input_ftrs_dir = args['--input_ftrs_dir']
     else:
-        input_ftrs_dir = "/data/ANTICIPATE/github/testdata/output/odyn/features/0.5-mpp_512_256_dysplasia-0.5/nuclear/pt_files/"
+        input_ftrs_dir = "/data/ANTICIPATE/github/testdata/output/odyn/features/0.5-mpp_512_256_dysplasia-0.25/nuclear/pt_files/"
         
     if args['--output_dir']:
         output_dir = args['--output_dir']

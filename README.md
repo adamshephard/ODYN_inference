@@ -29,6 +29,7 @@ Note, this repository is for use with oral tissue H&E-stained WSIs/ROIs alone. W
 - [X] Add interactive demo
 - [ ] Add nuclei (as DBs) and heatmaps, and more slides to interactive demo (see below).
 - [X] Viz output demo using TIAViz.
+- [ ] Make file to covert images into db files for easy visualisation.
 - [X] Add new HoVer-Net+ weights
 - [X] Upload CV model weights
 - [X] License information
