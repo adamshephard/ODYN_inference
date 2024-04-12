@@ -56,7 +56,6 @@ class featuresdataset_inference(data.Dataset):
         self.norm = norm
         
     def feature_normalisation(self, features):
-        ftrs = features.numpy()
         # Z-score normalisation
         try:
             ftrs_normed = (features.numpy() - np.asarray(self.norm.iloc[0])) / (np.asarray(self.norm.iloc[1]))
@@ -83,14 +82,24 @@ class featuresdataset_inference(data.Dataset):
         return len(self.tiles)
 
 class featuresdataset_wsi_inference(data.Dataset):
-    def __init__(self, patches, rois, layer_col_dict, raw_images=False, transform=None):
+    def __init__(self, patches, rois, layer_col_dict, raw_images=False, transform=None, norm=None):
         # opens data dictionary (lib)
         self.color_dict = layer_col_dict
         self.patches = patches
         self.rois = rois
         self.transform = transform
         self.raw_images = raw_images
-
+        self.norm = norm
+        
+    def feature_normalisation(self, features):
+        # Z-score normalisation
+        try:
+            ftrs_normed = (features.numpy() - np.asarray(self.norm.iloc[0])) / (np.asarray(self.norm.iloc[1]))
+        except:
+            ftrs_normed = (features.numpy() - self.norm[0]) / (self.norm[1])
+            
+        return torch.tensor(ftrs_normed)
+    
     def __getitem__(self,index):
         tile = self.patches[index]
         coords = torch.from_numpy(self.rois[index])

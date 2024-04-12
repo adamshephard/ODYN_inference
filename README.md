@@ -27,7 +27,8 @@ Note, this repository is for use with oral tissue H&E-stained WSIs/ROIs alone. W
 - [X] Run ODYN script and tidy output of odyn score/diagnosis
 - [ ] Heatmap script
 - [X] Add interactive demo
-- [ ] Add nuclei (as DBs) and heatmaps, and more slides to interactive demo.
+- [ ] Add nuclei (as DBs) and heatmaps, and more slides to interactive demo (see below).
+- [ ] Viz output demo using TIAViz (perhaps use this for above).
 - [X] Add new HoVer-Net+ weights
 - [X] Upload CV model weights
 - [X] License information
@@ -98,14 +99,14 @@ We use the following weights in this work. If any of the models or checkpoints a
 
 #### ODYN Pipeline
 
-A user can run the ODYN pipeline on all their slides using the below command. This can be quite slow as nuclear segmentation (with HoVer-Net+) is run at 0.5mpp.
+A user can run the ODYN pipeline on all their slides using the below command. This can be quite slow as nuclear segmentation (with HoVer-Net+) is run at 0.5mpp. 
 
 Usage: <br />
 ```
   python run_odyn.py --input_data_file="/path/to/input/data/file/" --input_dir="/path/to/input/slides/or/images/dir/" --output_dir="/path/to/output/dir/" --transformer_weights="/path/to/hovernetplus/checkpoint/" --hovernetplus_weights="/path/to/hovernetplus/checkpoint/" --mlp_weights="/path/to/mlp/checkpoint/" --mlp_norm_params="/path/to/mlp/norm/params/" --mlp_cutoff_file="/path/to/mlp/cutoffs/"
 ```
 
-Alternatively, to have more control, a user can run each of the stages used by the ODYN model at a time. These are shown below.
+Alternatively, to have more control, a user can run each of the stages used by the ODYN model at a time. These are shown below. We recommend users to do use this method.
 
 #### Dysplasia Segmentation with Transformer
 
@@ -170,7 +171,7 @@ Check out the demo [here](https://tiademos.dcs.warwick.ac.uk/bokeh_app?demo=odyn
 In the demo, we provide multiple examples of WSI-level results. These include:
 - Dysplasia segmentations (using the Transformer model). Here, dysplasia is in red.
 - Intra-epithelial layer segmentation (using HoVer-Net+). Here, orange is stroma, red is the basal layer, green the (core) epithelial layer, and blue keratin.
-- Nuclei segmentations (using HoVer-Net+). Here, orange is "other" nuclei (i.e. connective/inflammatory), whilst the epithelial nuclei are coloured according to their intra-epithelial layer (see above)).
+- Nuclei segmentations (using HoVer-Net+). Here, orange is "other" nuclei (i.e. connective/inflammatory), whilst the epithelial nuclei are coloured according to their intra-epithelial layer (see above).
 - ODYN heatmaps where red spots show areas of high importance for predicting malignant transformation.
 
 Each histological object can be toggled on/off by clicking the appropriate buton on the right hand side. Also, the colours and the opacity can be altered.
