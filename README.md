@@ -28,7 +28,7 @@ Note, this repository is for use with oral tissue H&E-stained WSIs/ROIs alone. W
 - [X] Heatmap script
 - [X] Add interactive demo
 - [ ] Add nuclei (as DBs) and heatmaps, and more slides to interactive demo (see below).
-- [ ] Viz output demo using TIAViz (perhaps use this for above).
+- [X] Viz output demo using TIAViz.
 - [X] Add new HoVer-Net+ weights
 - [X] Upload CV model weights
 - [X] License information
@@ -68,6 +68,7 @@ Below are the main executable scripts in the repository:
 - `feature_generation.py`: script to generate features for the final MLP model (using output from above script)
 - `oed_prognosis.py`: main inference script for geenrating the ODYN-score for predicting malignant transformation
 - `heatmap_generation.py`: script to generate heatmaps
+- `visualize_output.sh`: bash script to load TIAViz for visualising all ODYN output at WSI-level
 
 
 ## Inference
@@ -160,6 +161,14 @@ We can also generate heatmaps for these images. Change the `stride` within the f
 Usage: <br />
 ```
   python heatmap_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --mask_dir="/path/to/combined/mask/" --nuclei_dir --checkpoint_path="/path/to/mlp/checkpoint/" --output_dir="/path/to/heatmap/output/dir/"
+```
+
+#### Visualisation with TIAViz
+
+Below we use the TIAToolbox's TIAViz tool to visualize the model output from OsDYN. Simply ammend the `slide_dir` and `overlay_dir` to the corresponding folders. Note, TIAViz will look two directory levels deep for overlays, prefixed with the name of the slide. You may need to change the permissions of the script to make it executable. If you use TIAViz, then please cite the paper [TIAViz: A Browser-based Visualization Tool for Computational Pathology Models](https://arxiv.org/abs/2402.09990).
+```
+$ chmod u+wrx ./visualize_output.sh
+$ ./visualize_output.sh
 ```
 
 ## Interactive Demo
