@@ -346,7 +346,7 @@ if __name__ == '__main__':
     proc_res = 0.5 # resolution of intermediate patches 
     output_res = 2 # desired resolution of output heatmaps
     layer_res = 0.5 # resolution of layer segmentation from HoVer-Net+ in MPP
-    epith_thresh = 0.5 # threshold for ratio of epithelium required to be in a patch to use patch
+    epith_thresh = 0.25 # threshold for ratio of epithelium required to be in a patch to use patch
     nr_repeats = 3
     nr_folds = 5
     
