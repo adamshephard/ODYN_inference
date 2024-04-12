@@ -25,7 +25,7 @@ Note, this repository is for use with oral tissue H&E-stained WSIs/ROIs alone. W
 - [X] Get feature generation script to create tiles in desired way for MIL model, i.e. per patch
 - [X] OED prognosis script
 - [X] Run ODYN script and tidy output of odyn score/diagnosis
-- [ ] Heatmap script
+- [X] Heatmap script
 - [X] Add interactive demo
 - [ ] Add nuclei (as DBs) and heatmaps, and more slides to interactive demo (see below).
 - [ ] Viz output demo using TIAViz (perhaps use this for above).
@@ -67,7 +67,7 @@ Below are the main executable scripts in the repository:
 - `oed_diagnosis.py`: script to diagnose a slide as OED vs normal (using output from above script)
 - `feature_generation.py`: script to generate features for the final MLP model (using output from above script)
 - `oed_prognosis.py`: main inference script for geenrating the ODYN-score for predicting malignant transformation
-- [IN PROGRESS]`heatmap_generation.py`: script to generate heatmaps (needs tidying up)
+- `heatmap_generation.py`: script to generate heatmaps
 
 
 ## Inference
@@ -132,16 +132,16 @@ The second stage is to classify a slide as being OED vs normal.
 
 Usage: <br />
 ```
-  python oed_diagnosis.py ---input_epith="/path/to/hovernetplus/output/" --input_dysplasia="/path/to/transformer/output/" --output_dir="/path/to/output/dir/"
+  python oed_diagnosis.py ---input_epith="/path/to/hovernetplus/mask/output/" --input_dysplasia="/path/to/transformer/output/" --output_dir="/path/to/output/dir/"
 ```
 
 #### Feature Generation with ODYN
 
-The fourth stage is to tesselate the image into smaller patches and generate correpsonding patch-level morphological and spatial features using the nuclei/layer segmentations. Note the `epithelium_dir` is the output directory from the previous step.
+The fourth stage is to tesselate the image into smaller patches and generate correpsonding patch-level morphological and spatial features using the nuclei/layer segmentations. Note the `mask_dir` is the epithelial mask output and `nuclei_dir` is the nuclei output directory from the HoVer-Net+ step.
 
 Usage: <br />
 ```
-  python feature_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --epithelium_dir="/path/to/hovernetplus/output/" --output_dir="/path/to/output/feature/dir/"
+  python feature_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --mask_dir="/path/to/hovernetplus/mask/output/" --nuclei_dir="/path/to/hovernetplus/nuclei/output/" --output_dir="/path/to/output/feature/dir/"
 ```
 
 #### OED Prognosis wit ODYN, i.e. the ODYN-score
@@ -155,11 +155,11 @@ Usage: <br />
 
 #### ODYN Heatmaps
 
-We can also generate heatmaps for these images. Change the `stride` within the file from 128 to create smoother images. However, a decreased stride by 2X will increase the processing time by 2X.
+We can also generate heatmaps for these images. Change the `stride` within the file from 128 to create smoother images. However, a decreased stride by 2X will increase the processing time by 2X. Note this use the combined mask prdocued by the `oed_diagnosis.py` script.
     
 Usage: <br />
 ```
-  python heatmap_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --hovernetplus_dir="/path/to/hovernetplus/output/" --checkpoint_path="/path/to/mlp/checkpoint/" --output_dir="/path/to/heatmap/output/dir/"
+  python heatmap_generation.py --input_dir="/path/to/input/slides/or/images/dir/" --mask_dir="/path/to/combined/mask/" --nuclei_dir --checkpoint_path="/path/to/mlp/checkpoint/" --output_dir="/path/to/heatmap/output/dir/"
 ```
 
 ## Interactive Demo

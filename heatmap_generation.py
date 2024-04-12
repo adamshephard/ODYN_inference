@@ -342,7 +342,7 @@ if __name__ == '__main__':
         "epith": [2, [255, 0,   0]],
     }
     patch_size = 512 # desired output patch size
-    stride = 128 # stride for sliding window of patches. Decrease stride to make smoother heatmaps (but 0.5x stride = 2x comp. time)
+    stride = 64 # stride for sliding window of patches. Decrease stride to make smoother heatmaps (but 0.5x stride = 2x comp. time)
     proc_res = 0.5 # resolution of intermediate patches 
     output_res = 2 # desired resolution of output heatmaps
     layer_res = 0.5 # resolution of layer segmentation from HoVer-Net+ in MPP
@@ -388,6 +388,7 @@ if __name__ == '__main__':
               
         # then create heatmap per repeat
         heatmaps = []
+        heatmap_output_repeat_dir = os.path.join(heatmap_output_dir, "cross_valid", f"{features}_{proc_res}mpp_{patch_size}_{stride}_{epith_thresh}")
         for repeat in range(1, nr_repeats+1):
             for fold in range(nr_folds):
                 input_checkpoint_path_ = os.path.join(input_checkpoint_path, f"repeat{repeat}_fold{fold}.pth")
@@ -406,7 +407,6 @@ if __name__ == '__main__':
                     normalize = None
                     trans_Valid = None
                 
-                heatmap_output_dir = os.path.join(heatmap_output_dir, "cross_valid", f"{features}_{proc_res}mpp_{patch_size}_{stride}_{epith_thresh}")
                 heatmap_repeat = create_heatmaps(
                     model,
                     features,
@@ -415,7 +415,7 @@ if __name__ == '__main__':
                     output_rois,
                     input_checkpoint_path_,
                     (norm_params, normalize, trans_Valid),
-                    heatmap_output_dir,
+                    heatmap_output_repeat_dir,
                     proc_res,
                     output_res,
                     batch_size,
@@ -430,4 +430,4 @@ if __name__ == '__main__':
         
     # then remove temp dirs... maybe...
     # shutil.rmtree(output_ftrs_dir)
-    # shutil.rmtree(heatmap_output_dir))
+    # shutil.rmtree(heatmap_output_repeat_dir))
