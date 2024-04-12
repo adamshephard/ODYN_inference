@@ -165,7 +165,7 @@ Usage: <br />
 
 #### Visualisation with TIAViz
 
-Below we use the TIAToolbox's TIAViz tool to visualize the model output from OsDYN. Simply ammend the `slide_dir` and `overlay_dir` to the corresponding folders. Note, TIAViz will look two directory levels deep for overlays, prefixed with the name of the slide. You may need to change the permissions of the script to make it executable. If you use TIAViz, then please cite the paper [TIAViz: A Browser-based Visualization Tool for Computational Pathology Models](https://arxiv.org/abs/2402.09990).
+Below we use the TIAToolbox's TIAViz tool to visualise the model output from OsDYN. Simply ammend the `slide_dir` and `overlay_dir` to the corresponding folders. Note, TIAViz will look two directory levels deep for overlays, prefixed with the name of the slide. You may need to change the permissions of the script to make it executable. If you use TIAViz, then please cite the paper [TIAViz: A Browser-based Visualization Tool for Computational Pathology Models](https://arxiv.org/abs/2402.09990).
 ```
 $ chmod u+wrx ./visualize_output.sh
 $ ./visualize_output.sh

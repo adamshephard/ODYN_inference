@@ -428,6 +428,6 @@ if __name__ == '__main__':
         combined_heatmap = get_heatmap(combined_heatmap)
         imwrite(os.path.join(heatmap_output_dir, f"{slide_name}.png"), combined_heatmap)
         
-    # then remove temp dirs... maybe...
+    # then remove temp directories
     # shutil.rmtree(output_ftrs_dir)
     # shutil.rmtree(heatmap_output_repeat_dir))
