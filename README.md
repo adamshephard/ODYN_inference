@@ -18,24 +18,6 @@ Following this, for OED slides, we generate patch-level morphological and spatia
 
 Note, this repository is for use with oral tissue H&E-stained WSIs/ROIs alone. We recommend running inference of the ODYN model on the GPU. Nuclear instance segmentation, in particular, will be very slow when run on CPU. 
 
-## TO DO
-- [X] Add post processing to epithelium segmentation with HoVer-Net+
-- [X] OED diagnosis script
-- [X] Feature generation script
-- [X] Get feature generation script to create tiles in desired way for MIL model, i.e. per patch
-- [X] OED prognosis script
-- [X] Run ODYN script and tidy output of odyn score/diagnosis
-- [X] Heatmap script
-- [X] Add interactive demo
-- [ ] Add nuclei (as DBs) and heatmaps, and more slides to interactive demo (see below).
-- [X] Viz output demo using TIAViz.
-- [ ] Make file to covert images into db files for easy visualisation.
-- [X] Add new HoVer-Net+ weights
-- [X] Upload CV model weights
-- [X] License information
-- [ ] Add pre print and citation information
-- [ ] Make repo public
-
 ## Set Up Environment
 
 We use Python 3.11 with the [tiatoolbox](https://github.com/TissueImageAnalytics/tiatoolbox) package installed. By default this uses PyTorch 2.2.
@@ -69,6 +51,7 @@ Below are the main executable scripts in the repository:
 - `feature_generation.py`: script to generate features for the final MLP model (using output from above script)
 - `oed_prognosis.py`: main inference script for geenrating the ODYN-score for predicting malignant transformation
 - `heatmap_generation.py`: script to generate heatmaps
+- `visualize_output.py`: script to convert output annotations into a single annotation store for easy viewing with TIAViz
 - `visualize_output.sh`: bash script to load TIAViz for visualising all ODYN output at WSI-level
 
 

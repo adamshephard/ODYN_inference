@@ -1,5 +1,6 @@
 """
 Collate the output from ODYN and supply it in a succint way for visualisation with TIAViz.
+NOTE script does not work for holes currently.
 
 Usage:
   visualize_output.py [options] [--help] [<args>...]
