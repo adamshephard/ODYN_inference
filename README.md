@@ -177,4 +177,17 @@ Model weights are licensed under [Attribution-NonCommercial-ShareAlike 4.0 Inter
 
 ## Cite this repository
 
-TO DO
+If you find ODYN useful or use it in your research, please cite our paper:
+
+```
+@article {Shephard2024,
+	author = {Shephard, Adam J and Mahmood, Hanya and Raza, Shan E Ahmed and Araujo, Anna Luiza Damaceno and Santos-Silva, Alan Roger and Lopes, Marcio Ajudarte and Vargas, Pablo Agustin and McCombe, Kristopher D and Craig, Stephanie G and James, Jacqueline and Brooks, Jill M and Nankivell, Paul and Mehanna, Hisham and Khurram, Syed A and Rajpoot, Nasir},
+	title = {Development and Validation of an Artificial Intelligence-based Pipeline for Predicting Oral Epithelial Dysplasia Malignant Transformation},
+	elocation-id = {2024.11.13.24317264},
+	year = {2024},
+	doi = {10.1101/2024.11.13.24317264},
+	publisher = {Cold Spring Harbor Laboratory Press},
+	URL = {https://www.medrxiv.org/content/early/2024/11/13/2024.11.13.24317264},
+	eprint = {https://www.medrxiv.org/content/early/2024/11/13/2024.11.13.24317264.full.pdf},
+	journal = {medRxiv}
+}
